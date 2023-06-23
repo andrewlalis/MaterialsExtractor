@@ -20,16 +20,17 @@ jobs:
           java-version: "17"
           distribution: "temurin"
 
+      - name: Extract Tag Version
+        id: get_version
+        run: echo "tag_version=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
+
       - name: Build with Maven
         id: build
         run: |
           mvn -B package --file pom.xml
           asset=$(find target/ -type f -name "*jar-with-dependencies.jar")
-          echo "asset_path=$asset" >> $GITHUB_OUTPUT
-
-      - name: Extract Tag Version
-        id: get_version
-        run: echo "tag_version=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
+          cp $asset materials-extractor-${{steps.get_version.outputs.tag_version}}.jar
+          echo "asset_path=materials-extractor-${{steps.get_version.outputs.tag_version}}.jar" >> $GITHUB_OUTPUT
 
       - name: Logs
         run: |
@@ -42,13 +43,3 @@ jobs:
         with:
           name: MaterialsExtractor ${{steps.get_version.outputs.tag_version}}
           files: ${{steps.build.outputs.asset_path}}
-
-#      - name: Upload Asset
-#        uses: actions/upload-release-asset@v1
-#        env:
-#          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-#        with:
-#          upload_url: ${{steps.create_release.outputs.upload_url}}
-#          asset_name: materials-extractor-${{steps.get_version.outputs.tag_version}}.jar
-#          asset_path: ${{steps.build.outputs.asset_path}}
-#          asset_content_type: application/java-archive
