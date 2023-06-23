@@ -25,11 +25,11 @@ jobs:
         run: |
           mvn -B package --file pom.xml
           asset=$(find target/ -type f -name "*jar-with-dependencies.jar")
-          echo "name=asset_path::$asset" >> $GITHUB_STATE
+          echo "name=asset_path::$asset" >> $GITHUB_OUTPUT
 
       - name: Extract Tag Version
         id: get_version
-        run: echo "name=tag_version::${GITHUB_REF/refs\/tags\//}" >> $GITHUB_STATE
+        run: echo "name=tag_version::${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
 
       - name: Create Release
         id: create_release
