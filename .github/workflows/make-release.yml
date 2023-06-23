@@ -1,15 +1,14 @@
 name: Make Release
 
 on:
-  create:
-    branches: ["main"]
+  push:
     tags: ["v*"]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
 
     steps:
       - name: Checkout
@@ -37,13 +36,14 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           name: MaterialsExtractor ${{steps.get_version.outputs.tag_version}}
+          files: ${{steps.build.outputs.asset_path}}
 
-      - name: Upload Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-        with:
-          upload_url: ${{steps.create_release.outputs.upload_url}}
-          asset_name: materials-extractor-${{steps.get_version.outputs.tag_version}}.jar
-          asset_path: ${{steps.build.outputs.asset_path}}
-          asset_content_type: application/java-archive
+#      - name: Upload Asset
+#        uses: actions/upload-release-asset@v1
+#        env:
+#          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+#        with:
+#          upload_url: ${{steps.create_release.outputs.upload_url}}
+#          asset_name: materials-extractor-${{steps.get_version.outputs.tag_version}}.jar
+#          asset_path: ${{steps.build.outputs.asset_path}}
+#          asset_content_type: application/java-archive
