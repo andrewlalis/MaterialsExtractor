@@ -1,7 +1,7 @@
 name: Make Release
 
 on:
-  push:
+  create:
     branches: ["main"]
     tags: ["v*"]
 
@@ -26,11 +26,11 @@ jobs:
         run: |
           mvn -B package --file pom.xml
           asset=$(find target/ -type f -name "*jar-with-dependencies.jar")
-          echo "::set-output name=asset_path::$asset"
+          echo "name=asset_path::$asset" >> $GITHUB_STATE
 
       - name: Extract Tag Version
         id: get_version
-        run: echo "::set-output name=tag_version::${GITHUB_REF/refs\/tags\//}"
+        run: echo "name=tag_version::${GITHUB_REF/refs\/tags\//}" >> $GITHUB_STATE
 
       - name: Create Release
         id: create_release
